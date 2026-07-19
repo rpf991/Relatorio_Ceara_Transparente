@@ -5,6 +5,32 @@
 O projeto consiste na automação de um pipeline de dados orquestrados pelo Apache Airflow que consome e analisa os contratos públicos da API do Ceará Transparente. O objetivo principal é extrair os registros de contratos nas ultimas duas semanas, armazená-los no PostegreSQL, e utilizar um modelo de Large Language Model (LLM) para classificar semanticamente os 30 registros com os maiores valores financeiros. A solução poderá contribuir
 para agilizar a análise das áreas que recebem os maiores investimentos públicos, gerando um relatório automatizado em HTML
 
+
+# 1) Arquitetura do Pipeline
+
+```mermaid
+graph TD
+    A[API Ceará Transparente] -->|01. Extração de Dados| B(Task: contratos_api)
+    B -->|02. Persistência Bruta| C[(PostgreSQL: Tabela contratos_api)]
+    C -->|03. Consulta 30 maiores| D(Task: Classificação com LLM)
+    D -->|04. Persistência Enriquecida| E[(PostgreSQL: Tabela contratos_classificados)]
+    E -->|05. Geração de Relatório| F[Relatório Final HTML]
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#bbf,stroke:#333,stroke-width:2px
+    style E fill:#bbf,stroke:#333,stroke-width:2px
+    style F fill:#bfb,stroke:#333,stroke-width:2px
+```
+
+# 2) Pré-Requisitos
+
+    Antes de Inciar certifique-se de ter instalado na sua máquina:
+    - Docker Desktop (https://www.docker.com/products/docker-desktop/)
+    - PostegreSQL (https://www.postgresql.org/download/)
+    - Uma API de serviço de LLM configurada (OpenAI, Groq, Gemini, etc.)
+
+
+
 ## Preparação no Docker
 
 Caso seu container ainda não esteja criado no Docker Desktop,
