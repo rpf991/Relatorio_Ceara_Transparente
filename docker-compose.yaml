@@ -1,0 +1,126 @@
+version: '4.82'
+
+x-airflow-common: &airflow-common
+  build:
+    context: .
+    dockerfile: Dockerfile
+  env_file:
+    - ./dags/.env
+    - ./.env
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${DB_POSTEGRES_USER}:${DB_POSTEGRES_PASSWORD}@postgres-airflow/${DB_POSTEGRES_TABLE}
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'true'
+
+    # Timezone padrão para os agendamentos da DAG
+    AIRFLOW__CORE__DEFAULT_TIMEZONE: America/Sao_Paulo
+
+    # Timezone padrão para o webserver DAG
+    AIRFLOW__WEBSERVER__DEFAULT_UI_TIMEZONE: America/Sao_Paulo
+
+  volumes:
+    - ./dags:/opt/airflow/dags
+    - ./logs:/opt/airflow/logs
+    - ./plugins:/opt/airflow/plugins
+  user: "${AIRFLOW_UID:-50000}:0"
+  depends_on:
+    &airflow-common-depends-on
+    postgres-airflow:
+      condition: service_healthy
+
+services:
+
+  postgres-airflow:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${DB_POSTEGRES_USER}
+      POSTGRES_PASSWORD: ${DB_POSTEGRES_PASSWORD} 
+      POSTGRES_DB: ${DB_POSTEGRES_TABLE}
+    volumes:
+      - postgres-airflow-db-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${DB_POSTEGRES_USER}"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+
+
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "http://localhost:8080/health"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        mkdir -p /opt/airflow/dags/registros
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/{logs,dags,plugins}
+        airflow db migrate
+        airflow users create \
+          --username admin \
+          --firstname admin \
+          --lastname admin \
+          --role Admin \
+          --email admin@example.com \
+          --password ${AIRFLOW_ADMIN_PASSWORD}
+    environment:
+      <<: *airflow-common-env
+    user: "0:0"
+
+
+  airflow-log-cleanup:
+    <<: *airflow-common
+    container_name: airflow-log-cleanup
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        echo "Serviço de limpeza de logs iniciado. Rodando a cada 24h."
+        while true; do
+          echo "$(date) - Procurando logs com mais de 3 dias..."
+          find /opt/airflow/logs -type d -name "run_id=*" -mtime +3 -exec rm -rf {} + 2>/dev/null
+          find /opt/airflow/logs -type f -mtime +3 -delete 2>/dev/null
+          echo "$(date) - Limpeza concluída. Próxima checagem em 24h."
+          sleep 86400
+        done
+    restart: always
+    depends_on:
+      <<: *airflow-common-depends-on
+    
+
+volumes:
+  postgres-airflow-db-volume:

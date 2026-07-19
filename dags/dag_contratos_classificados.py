@@ -876,8 +876,6 @@ def geracao_relatorio_html(quantidade_registros, lista_classificacoes: list[dict
     pasta_registros.mkdir(parents=True, exist_ok=True)
 
     caminho_path = pasta_registros / "relatorio_contratos_classificados.html"
-
-    #caminho_path = Path(r"registros/relatorio_contratos_classificados.html")
     caminho_path.write_text(string_html, encoding="utf-8")
     
     logger.info(f'Relatório atualizado em: {caminho_path}')
@@ -891,7 +889,7 @@ with DAG (
     start_date=datetime(2026,1,1, tzinfo=pendulum.timezone("America/Sao_Paulo")),
     schedule="0 10 * * *",
     catchup=False,
-    tags=['groq', 'llm', 'pstg']
+    tags=['groq', 'llm', 'postegres']
 ) as dag:
     
     @task 

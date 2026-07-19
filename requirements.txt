@@ -1,0 +1,8 @@
+pandas 
+requests 
+psycopg2-binary 
+pendulum 
+scikit-learn 
+numpy 
+apache-airflow 
+groq
