@@ -39,6 +39,19 @@ O projeto foi desenvolvido utilizando as seguintes ferramentas/frameworks:
 * **Infraestrutura**: Docker & Docker Compose (para containerização de todo o ambiente)
 * **Visualização**: Relatórios gerados dinamicamente através de HTML
 
+# 4) Estrutura Repositório
+
+```text
+Relatorio_Ceara_Transparente/
+├── dags/
+│   ├── dag_contratos_classificados.py  # Código principal da DAG do Airflow
+│   └── .env                            # Variáveis e chaves da API da LLM / Banco
+├── docker-compose.yaml                 # Definição dos serviços do Docker (Airflow e Postgres)
+├── Dockerfile                          # Customização da imagem e instalação do requirements.txt
+├── requirements.txt                    # Bibliotecas python essenciais para a Dag
+├── .env                                # Variáveis globais de ambiente
+└── README.md                           # Documentação do projeto
+
 
 # 4) Preparação no Docker
 
@@ -74,7 +87,6 @@ execute os seguintes comandos dentro do terminal do VS CODE
 
     Esses comandos reiniciam os containers, forçando o scheduler do Airflow a ler
     a pasta de Dags novamente e atualizar a interface
-
 
 4) **Comandos para manutenção**
    
