@@ -30,6 +30,7 @@ flowchart  TB
     - Uma API de serviço de LLM configurada (ex: OpenAI, Groq, Gemini, etc.)
 
 # 3) Ferramentas Utilizadas
+
 O projeto foi desenvolvido utilizando as seguintes ferramentas/frameworks:
 
 * **Linguagem de Programação**: Python 3.12
@@ -53,7 +54,7 @@ Relatorio_Ceara_Transparente/
 └── README.md                           # Documentação do projeto
 ```
 
-# 4) Preparação no Docker
+# 5) Preparação no Docker
 
 Caso seu container ainda não esteja criado no Docker Desktop,
 execute os seguintes comandos dentro do terminal do VS CODE
