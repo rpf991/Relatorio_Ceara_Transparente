@@ -1,0 +1,26 @@
+# Variáveis de Ambiente
+.env
+dags/.env
+dags/registros/
+*.env 
+
+# Logs do airflow
+logs/
+plugins/__pycache__/
+
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ambientes virtuais locais
+.venv/
+venv/
+
+# Arquivos de configuração local do servidorr
+.vscode/
+.idea/
+
+# Dados do Postgres
+pgdata/
