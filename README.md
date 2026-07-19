@@ -43,7 +43,7 @@ O projeto foi desenvolvido utilizando as seguintes ferramentas/frameworks:
 # 4) Preparação no Docker
 
 Caso seu container ainda não esteja criado no Docker Desktop,
-execute os seguintes comandos dentro do terminal do VSCODE
+execute os seguintes comandos dentro do terminal do VS CODE
 
 1) **Criação dos Containers**
 
