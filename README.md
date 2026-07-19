@@ -9,7 +9,7 @@ para agilizar a análise das áreas que recebem os maiores investimentos públic
 # 1) Arquitetura do Pipeline
 
 ```mermaid
-graph TD
+flowchart  TB
     A[API Ceará Transparente] -->|01. Extração de Dados| B(Task: contratos_api)
     B -->|02. Persistência Bruta| C[(PostgreSQL: Tabela contratos_api)]
     C -->|03. Consulta 30 maiores| D(Task: Classificação com LLM)
@@ -25,16 +25,25 @@ graph TD
 # 2) Pré-Requisitos
 
     Antes de Inciar certifique-se de ter instalado na sua máquina:
-    - Docker Desktop (https://www.docker.com/products/docker-desktop/)
-    - PostegreSQL (https://www.postgresql.org/download/)
-    - Uma API de serviço de LLM configurada (OpenAI, Groq, Gemini, etc.)
+    - [Docker Desktop] (https://www.docker.com/products/docker-desktop/) (rodará o Airflow e o PostgreSQL internamente)
+    - Um cliente de banco de dados (ex: [DBeaver] (https://dbeaver.io/download/) ou [PGAdmin] (https://www.pgadmin.org/download/))
+    - Uma API de serviço de LLM configurada (ex: OpenAI, Groq, Gemini, etc.)
+
+# 3) Ferramentas Utilizadas
+O projeto foi desenvolvido utilizando as seguintes ferramentas/frameworks:
+
+* **Linguagem de Programação**: Python 3.12
+* **Orquestração do Fluxo**: Apache Airflow (para agendamento e execução das tasks)
+* **Banco de Dados Relacional**: PostgreSQL (para armazenamento de dados brutos e classificados)
+* **Inteligência Artificial**: Groq (para classificação dos contratos de maior valor financeiro)
+* **Infraestrutura**: Docker & Docker Compose (para containerização de todo o ambiente)
+* **Visualização**: Relatórios gerados dinamicamente através de HTML
 
 
-
-## Preparação no Docker
+# 4) Preparação no Docker
 
 Caso seu container ainda não esteja criado no Docker Desktop,
-dentro do terminal do VSCODE execute os seguintes comandos
+execute os seguintes comandos dentro do terminal do VSCODE
 
 1) **Criação dos Containers**
 
@@ -54,10 +63,13 @@ dentro do terminal do VSCODE execute os seguintes comandos
 
 3) **Verificar se está funcionando**
 
-    Acesse o site localhost:8080 para entrar na interface do Airflow Webserver.
-    Caso a DAG demore para aparecer na listagem, realize os seguintes comandos no terminal:
+    Acesse o site http://localhost:8080 para entrar na interface do Airflow Webserver. Caso a DAG demore para aparecer na listagem, você pode forçar a reinicialização rápida do Scheduler e do Webserver com o comando:
 
-    -**docker compose down** (remoção dos containers)
+    - **docker compose restart**
+
+    Caso queira reinicializar por completo, limpando o ambiente, execute esses comandos:
+
+    - **docker compose down** (remoção dos containers)
     - **docker compose up -d** (inserção dos mesmos containers)
 
     Esses comandos reiniciam os containers, forçando o scheduler do Airflow a ler
