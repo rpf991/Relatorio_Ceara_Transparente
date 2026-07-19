@@ -45,13 +45,13 @@ O projeto foi desenvolvido utilizando as seguintes ferramentas/frameworks:
 Relatorio_Ceara_Transparente/
 ├── dags/
 │   ├── dag_contratos_classificados.py  # Código principal da DAG do Airflow
-│   └── .env                            # Variáveis e chaves da API da LLM / Banco
+│   └── .env                            # Variáveis e chaves da API da LLM / Banco de Dados
 ├── docker-compose.yaml                 # Definição dos serviços do Docker (Airflow e Postgres)
 ├── Dockerfile                          # Customização da imagem e instalação do requirements.txt
 ├── requirements.txt                    # Bibliotecas python essenciais para a Dag
 ├── .env                                # Variáveis globais de ambiente
 └── README.md                           # Documentação do projeto
-
+```
 
 # 4) Preparação no Docker
 
